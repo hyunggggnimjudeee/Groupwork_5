@@ -1,0 +1,83 @@
+---
+title: "RWorksheet_Group(5)"
+output: pdf_document
+date: "2023-11-29"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#1.
+library(rvest)
+library(dplyr)
+library(polite)
+library(httr)
+
+url <- "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"
+page <- read_html(url)
+
+session <- bow(url,
+               user_agent = "For TV Series Only")
+session
+
+session_page <- scrape(session)
+```
+
+```{r}
+#tv_shows <- scrape(session) %>%
+ #html_nodes("h3.ipc-title__text")%>%
+ #html_text()%>%
+ 
+class(tv_shows)
+
+tv_shows_list <- as.data.frame(tv_shows[1:50])
+
+head(tv_shows_list)
+
+tail(tv_shows_list)
+```
+
+```{r}
+years <- scrape(session)%>%
+ html_nodes("span class= sc-479faa3c-8 bNrEFi cli-title-metadata-item>2008–2013</span>")%>%
+ html_text()%>%
+ head(50)
+
+
+colnames(tv_shows_list) <- years
+```
+
+```{r}
+ratings <- scrape(session) %>%
+ html_nodes("sc-479faa3c-1 iMRvgp")%>%
+ html_text()
+ head(50)
+```
+
+```{r}
+votes <- page %>%
+ html_nodes("td.imdbVotes span") %>%
+ html_text()
+```
+
+```{r}
+episodes <- scrape(session) %>%
+ html_nodes("sccli-title-metadata-item") %>%
+ html_text()
+ head(50)
+```
+
+```{r}
+tv_show_data <- data.frame(Rank = 1:50,
+                           Title = tv_shows,
+                           Year = years,
+                           IMDb_Rating = ratings,
+                           Number_of_Votes = votes,
+                           Number_of_Seasons = seasons,
+                           stringsAsFactors = FALSE)
+
+
+print(tv_show_data)
+```
