@@ -1,0 +1,335 @@
+---
+title: "RWorksheet_Group5WS"
+author: "Sadural,Lomugda,Ulgasan,Fermano,Gregorio"
+output: pdf_document
+date: "2023-12-08"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+install.packages("dplyr")
+install.packages("rvest")
+install.packages("httr")
+install.packages("polite")
+install.packages("ggplot2")
+library(rvest)
+library(httr)
+library(dplyr)
+library(polite)
+library(ggplot2)
+```
+1. Each group needs to extract the top 50 tv shows in Imdb.com. It will include the rank, the title of the
+tv show, tv rating, the number of people who voted, the number of episodes, the year it was released.
+
+
+```{r}
+library(polite)
+library(rvest)
+library(httr)
+library(dplyr)
+
+
+
+url_link <- "https://www.imdb.com/chart/toptv/?ref_=nv_tvv_250"
+session <- bow(url_link, user_agent= "Educational Purposes")
+session
+
+#rank of the Top 50 Tv Shows
+TV_rank <- scrape(session)  %>% html_nodes('h3.ipc-title__text') %>% html_text()
+TV_rank [1:51]
+
+
+#Titles of the Top 50 Tv Shows
+TV_title <- scrape(session) %>%
+    html_nodes('h3.ipc-title__text') %>%
+    html_text()
+TV_title [1:51]
+
+#Rating of the Top 50 Tv Shows
+TV_rating <- scrape(session) %>%
+    html_nodes('span.ipc-rating-star--imdb') %>%
+    html_text()
+TV_rating [1:51]
+
+#Numbers Of Voters of the Top 50 Tv Shows
+numberofTV_voters <- scrape(session) %>%
+    html_nodes('span.ipc-rating-star--imdb') %>%
+    html_text()
+numberofTV_voters [1:51]
+
+#This shows on how many Episodes does the Top 50 Tv Shows have
+TV_episodes <- scrape(session) %>%
+    html_nodes('span.ipc-rating-star--voteCount') %>%
+    html_text()
+TV_episodes [1:51]
+
+#The Year it was released (The Top 50 Tv Shows)
+year <- scrape(session) %>%
+    html_nodes('span.sc-479faa3c-8:nth-of-type(1)') %>%
+    html_text()
+year [1:51]
+mini_length <- min(length(TV_rank), length(TV_title), length(TV_rating), length(numberofTV_voters), length(TV_episodes), length(year))
+mini_length
+
+TV_shows_data <- data.frame(
+  Rank = seq(1, mini_length),
+  Title = TV_title[1:mini_length],
+  Rating = TV_rating[1:mini_length],
+  NumberOfVoters = numberofTV_voters[1:mini_length],
+  Episodes = TV_episodes[1:mini_length],
+  Year = (sapply(year[1:mini_length], function(x) if (grepl("^\\d+$", x)) as.integer(x) else NA))
+)
+
+View(TV_shows_data)
+```
+
+2. From the 50 tv shows, select at least 5 tv shows to scrape the user reviews that will include the
+reviewer’s name, date of reviewed, user rating, title of the review, and text reviews.
+
+```{r}
+
+firstreviewlink <- "https://www.imdb.com/title/tt0903747/reviews?ref_=tt_urv"
+session_1 <- bow(firstreviewlink, user_agent= "Educational Purposes")
+session_1
+
+Reviewers_Nametv1 <- scrape(session_1) %>%
+    html_nodes('.display-name-link a') %>%
+    html_text()
+Reviewers_Nametv1
+
+Reviews_Datetv1 <- scrape(session_1) %>%
+    html_nodes('.review-date') %>%
+    html_text()
+Reviews_Datetv1
+
+User_Ratingtv1 <- scrape(session_1) %>%
+    html_nodes('.rating-other-user-rating') %>%
+    html_text()
+User_Ratingtv1
+
+Rev_Titletv1 <-scrape(session_1) %>%
+    html_nodes('.parent a') %>%
+    html_text()
+Rev_Titletv1
+
+Text_Revtv1 <-scrape(session_1) %>%
+    html_nodes('.collapsable div.text') %>%
+    html_text()
+Text_Revtv1
+
+
+secondreviewlink <- "https://www.imdb.com/title/tt5491994/reviews?ref_=tt_urv"
+session_2 <- bow(secondreviewlink, user_agent= "Educational Purposes")
+session_2
+
+Reviewers_Nametv2 <- scrape(session_2) %>%
+    html_nodes('.display-name-link a') %>%
+    html_text()
+Reviewers_Nametv2
+
+Reviews_Datetv2 <- scrape(session_2) %>%
+    html_nodes('.review-date') %>%
+    html_text()
+Reviews_Datetv2
+
+User_Ratingtv2 <- scrape(session_2) %>%
+    html_nodes('.rating-other-user-rating') %>%
+    html_text()
+User_Ratingtv2
+
+Rev_Titletv2 <-scrape(session_2) %>%
+    html_nodes('.parent a') %>%
+    html_text()
+Rev_Titletv2
+
+Text_Revtv2 <-scrape(session_2) %>%
+    html_nodes('.collapsable div.text') %>%
+    html_text()
+Text_Revtv2
+
+
+thirdreviewlink <- "https://www.imdb.com/title/tt0185906/reviews?ref_=tt_urv"
+session_3 <- bow(thirdreviewlink, user_agent= "Educational Purposes")
+session_3
+
+ReviewersNametv3 <- scrape(session_3) %>%
+    html_nodes('.display-name-link a') %>%
+    html_text()
+ReviewersNametv3
+
+ReviewsDatetv3 <- scrape(session_3) %>%
+    html_nodes('.review-date') %>%
+    html_text()
+ReviewsDatetv3
+
+UserRatingtv3 <- scrape(session_3) %>%
+    html_nodes('.rating-other-user-rating') %>%
+    html_text()
+UserRatingtv3
+
+RevTitletv3 <-scrape(session_3) %>%
+    html_nodes('.parent a') %>%
+    html_text()
+RevTitletv3
+
+TextRevtv3 <-scrape(session_3) %>%
+    html_nodes('.collapsable div.text') %>%
+    html_text()
+TextRevtv3
+
+
+fourthreviewlink <- "https://www.imdb.com/title/tt7366338/reviews?ref_=tt_urv"
+session4 <- bow(fourthreviewlink, user_agent= "Educational Purposes")
+session4
+
+Reviewers_Nametv4 <- scrape(session4) %>%
+    html_nodes('.display-name-link a') %>%
+    html_text()
+Reviewers_Nametv4
+
+Reviews_Datetv4 <- scrape(session4) %>%
+    html_nodes('.review-date') %>%
+    html_text()
+Reviews_Datetv4
+
+User_Ratingtv4 <- scrape(session4) %>%
+    html_nodes('.rating-other-user-rating') %>%
+    html_text()
+User_Ratingtv4
+
+Rev_Titletv4 <-scrape(session4) %>%
+    html_nodes('.parent a') %>%
+    html_text()
+Rev_Titletv4
+
+Text_Revtv4 <-scrape(session4) %>%
+    html_nodes('.collapsable div.text') %>%
+    html_text()
+Text_Revtv4
+
+#fifth
+fifthreviewlink <- "https://www.imdb.com/title/tt2395695/reviews?ref_=tt_urv"
+session5 <- bow(fifthreviewlink, user_agent= "Educational Purposes")
+session5
+
+Reviewers_Nametv5 <- scrape(session5) %>%
+    html_nodes('.display-name-link a') %>%
+    html_text()
+Reviewers_Nametv5
+
+Reviews_Datetv5 <- scrape(session5) %>%
+    html_nodes('.review-date') %>%
+    html_text()
+Reviews_Datetv5
+
+User_Ratingtv5 <- scrape(session5) %>%
+    html_nodes('.rating-other-user-rating') %>%
+    html_text()
+User_Ratingtv5
+
+Rev_Titletv5 <-scrape(session5) %>%
+    html_nodes('.parent a') %>%
+    html_text()
+Rev_Titletv5
+
+Text_Revtv5 <-scrape(session5) %>%
+    html_nodes('.collapsable div.text') %>%
+    html_text()
+Text_Revtv5
+
+
+```
+
+3. Create a time series graph for the tv shows released by year. Which year has the most number of tv
+shows released?
+```{r}
+library(ggplot2)
+library(dplyr)
+
+ggplot(data, aes(x = Year, fill = factor(Year))) +
+  geom_bar() +
+  labs(title = "Number of TV Shows Released by Year",
+       x = "Year",
+       y = "Number of TV Shows") +
+  theme_minimal()
+
+most_shows_year <- data %>%
+  group_by(Year) %>%
+  summarize(NumShows = n()) %>%
+  arrange(desc(NumShows)) %>%
+  slice(1)
+
+cat("Year with the most TV shows released:", most_shows_year$Year, "\n")
+cat("Number of TV shows released:", most_shows_year$NumShows, "\n")
+
+
+
+```
+
+4. Select 3 products from Amazon of the same category. Extract the price, description, ratings and
+reviews of each product.
+
+```{r}
+#1stproduct
+url <- "https://www.amazon.com/SteelSeries-Apex-Hybrid-Mechanical-Gaming-Keyboard/dp/B07ZGDD6B1/ref=sr_1_1_sspa?_encoding=UTF8&content-id=amzn1.sym.12129333-2117-4490-9c17-6d31baf0582a&keywords=gaming%2Bkeyboard&pd_rd_r=37d1ea2c-8e88-4495-be67-37d3b5a3d1d1&pd_rd_w=pDPnL&pd_rd_wg=vVF4U&pf_rd_p=12129333-2117-4490-9c17-6d31baf0582a&pf_rd_r=MDA7C7ZE453N7YHK4TZK&qid=1701532564&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1"
+
+session4 <- bow(url,
+               user_agent = "For Educational Purpose")
+session4
+
+product_name <- scrape(session4) %>%
+                html_nodes("span.a-size-large.product-title-word-break") %>%
+                html_text
+product_name
+
+product_price <- scrape(session4) %>%
+    html_nodes("div.a-section.a-spacing-none.aok-align-center") %>%
+    html_text
+product_price
+
+product_description <- scrape(session4) %>%
+    html_nodes("div.a-expander-collapsed-height.a-row.a-expander-container.a-spacing-none.a-expander-partial-collapse-container") %>%
+    html_text
+product_description
+
+product_ratings <- scrape(session4) %>%
+    html_nodes("span.a-size-base.a-color-base") %>%
+    html_text
+product_ratings
+
+
+
+#2ndproduct
+
+amazonlink2nd <- "https://www.amazon.com/dp/B09S5MJLF6/ref=sspa_dk_detail_2?psc=1&pd_rd_i=B09S5MJLF6&pd_rd_w=tkc0I&content-id=amzn1.sym.386c274b-4bfe-4421-9052-a1a56db557ab&pf_rd_p=386c274b-4bfe-4421-9052-a1a56db557ab&pf_rd_r=AFCCC2P8F4VENZZF4VRZ&pd_rd_wg=GH9kV&pd_rd_r=585deed2-ce5f-497b-b3f1-dbc0ea621f62&s=wireless&sp_csd=d2lkZ2V0TmFtZT1zcF9kZXRhaWxfdGhlbWF0aWM&spLa=ZW5jcnlwdGVkUXVhbGlmaWVyPUEyQzFIRDc2SUVHRlU5JmVuY3J5cHRlZElkPUEwMzMxNzg1MlBaVzRHV042M0hSNyZlbmNyeXB0ZWRBZElkPUEwODMzMDgyMUhUNlhSRVNSTlM3RCZ3aWRnZXROYW1lPXNwX2RldGFpbF90aGVtYXRpYyZhY3Rpb249Y2xpY2tSZWRpcmVjdCZkb05vdExvZ0NsaWNrPXRydWU="
+
+session7 <- bow(amazonlink2nd, user_agent= "Educational Purposes")
+session7
+
+
+price2 <-scrape(session7) %>%
+    html_nodes('#corePriceDisplay_desktop_feature_div .a-price-whole') %>%
+    html_text()
+price2
+
+description2 <-scrape(session7) %>%
+    html_nodes('#feature-bullets .a-list-item') %>%
+    html_text()
+description2
+
+prodrating2 <-scrape(session7) %>%
+    html_nodes('#acrPopover') %>%
+    html_text()
+prodrating2
+
+prodreview2 <- scrape(session7) %>%
+    html_nodes('#acrPopover') %>%
+    html_text()
+prodreview2
+
+
+```
