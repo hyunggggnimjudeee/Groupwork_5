@@ -1,0 +1,64 @@
+---
+title: "Final_Activity"
+author: "Sadural,Ulgasan,Gregorio,Lomugda"
+output: pdf_document
+date: "2023-12-22"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Select a website that you want to scrape 300 reviews. 
+```{r}
+
+library(dplyr)
+library(rvest)
+library(polite)
+library(httr)
+library(selectr)
+
+reviews = data.frame()
+
+for(counterrr in 1:12){
+  looplink = paste0("https://www.imdb.com/title/tt1517268/reviews?sort=userRating&dir=desc&ratingFilter=", + counterrr)
+  
+  link = looplink
+  
+  session <- bow(link,
+               user_agent = "For Educational Purpose")
+
+  
+  scrapeNodes <- function(selector){
+    scrape(session) %>%
+      html_nodes(selector) %>%
+      html_text(trim = TRUE)
+  }
+
+      rating_name <- scrapeNodes("span.display-name-link")
+ 
+
+      rating_title <- scrapeNodes("a.title")
+      
+      
+      rating_contents <- scrapeNodes("div.content")
+      
+      
+      rating_date <- scrapeNodes("span.review-date")
+      
+      
+      rating_ratings <- scrapeNodes("div.ipl-ratings-bar")
+
+      reviews <- rbind(reviews, data.frame(name = rating_name,
+                      title = rating_title,
+                      contents = rating_contents,
+                      date = rating_date,
+                      ratings = rating_ratings))
+
+}
+reviews[1:100,1:5]
+
+plot(reviews)
+
+
+```
